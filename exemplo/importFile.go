@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func readfile() []string {
-	file, err := os.Open("dup.txt")
+func Readfile() []string {
+	file, err := os.Open("../files/dup.txt")
 	if err != nil {
 		panic(err)
 	}

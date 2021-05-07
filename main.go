@@ -1,7 +1,7 @@
 package main
 
-//import exemplo "go/exemplo"
+import e "go/exemplo"
 
 func main() {
-
+	e.ChatSimple()
 }

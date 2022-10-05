@@ -6,11 +6,23 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var expectedArticles = []Article{
 	{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-	{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
+	//{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
+}
+
+type MockArticle struct {
+	mock.Mock
+}
+
+func (mock *MockArticle) getArticle() []Article {
+	args := mock.Called()
+	result := args.Get(0)
+	return result.([]Article)
 }
 
 func TestRest(t *testing.T) {
@@ -20,9 +32,14 @@ func TestRest(t *testing.T) {
 		t.Fatalf("Couldn't create request: %v\n", err)
 	}
 
+	mockArticle := new(MockArticle)
+	mockArticle.On("getArticle").Return(expectedArticles)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(returnAllArticles)
 	handler.ServeHTTP(rr, req)
+
+	mockArticle.AssertExpectations(t)
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
